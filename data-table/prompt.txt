@@ -1,0 +1,32 @@
+Create a comprehensive D3.js (version 7) datatable implementation for the Chocolate Sales dataset with the following functionality:
+
+1. Data Processing(Manipulation):
+   - Load and parse CSV data with proper type conversion (dates, numeric values)
+   - Group and summarize data as needed
+   - Structure the data for efficient filtering and sorting
+
+2. Visual Desgin(Mapping):
+   - Create a clean HTML table structure with headers and pagination
+   - Implement responsive design with appropriate CSS styling
+   - Add visual indicators for sorting direction and active filters
+
+3. Rendering and Interaction:
+   - Column sorting (ascending/descending) when clicking headers
+   - Text-based filtering for each column (input boxes in header)
+   - Dropdown filters for categorical columns (Country, Product, Sales Person)
+   - Global search across all columns
+   - Pagination with configurable page size
+
+4. Code Organization:
+   - Use modern JavaScript practices with clear variable names
+   - Separate concerns (data processing, rendering, event handling)
+   - Add detailed comments explaining each functional section
+   - Include error handling for data loading failures
+
+Here's a sample of the CSV data structure:
+
+Sales Person,Country,Product,Date,Amount,Boxes Shipped
+Jehu Rudeforth,UK,Mint Chip Choco,04-Jan-22,"$5,320",180
+Van Tuxwell,India,85% Dark Bars,01-Aug-22,"$7,896",94
+
+Please provide the complete implementation as three separate code blocks: HTML structure, CSS styling, and JavaScript logic, with comments explaining key implementation decisions.
