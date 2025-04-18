@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chocolate Sales Data Table</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f2f2f2;
+        position: relative;
+        cursor: pointer;
+      }
+
+      th:hover {
+        background-color: #e2e2e2;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      .sort-icon::after {
+        content: "⇅";
+        margin-left: 5px;
+        font-size: 0.8em;
+      }
+
+      .sort-asc::after {
+        content: "↑";
+        margin-left: 5px;
+        font-size: 0.8em;
+      }
+
+      .sort-desc::after {
+        content: "↓";
+        margin-left: 5px;
+        font-size: 0.8em;
+      }
+
+      .filter-controls {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .global-search {
+        padding: 8px;
+        width: 300px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      .column-filter {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 5px;
+        font-size: 0.8em;
+      }
+
+      .column-filter input,
+      .column-filter select {
+        padding: 6px;
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 5px;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .pagination {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .pagination-controls {
+        display: flex;
+        gap: 10px;
+      }
+
+      .pagination-controls button {
+        padding: 5px 10px;
+        cursor: pointer;
+        background-color: #f2f2f2;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      .pagination-controls button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .page-info {
+        font-size: 0.9em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Chocolate Sales Data Table</h1>
+
+      <div class="filter-controls">
+        <input
+          type="text"
+          class="global-search"
+          placeholder="Search across all columns..."
+        />
+      </div>
+
+      <div id="datatable"></div>
+
+      <div class="pagination">
+        <div class="page-info">
+          Showing <span id="start-record">1</span> to
+          <span id="end-record">10</span> of
+          <span id="total-records">0</span> entries
+        </div>
+        <div class="pagination-controls">
+          <button id="prev-page" disabled>Previous</button>
+          <button id="next-page">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
