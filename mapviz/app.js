@@ -26,7 +26,8 @@ const dataContainer = d3.select(detachedContainer);
 let mapTransform = d3.zoomIdentity;
 let worldData = null;
 const countryColors = {};
-const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([0, 5]); // Will be adjusted once data is loaded
+const colorScale = d3.scaleSequential(d3.interpolateBlues)
+    .domain([0, 5]);  // Will be adjusted once data is loaded
 
 // Set up projection and path generator
 const projection = d3
@@ -115,140 +116,142 @@ function drawMap() {
   context.restore();
 }
 
-// Implement hit detection for interactivity with improved interaction
+// Implement hit detection for interactivity
 function setupInteraction() {
-    const canvasElement = d3.select('#map-canvas');
+  const canvasElement = d3.select("#map-canvas");
+  
+  // Zoom behavior with improved configuration
+  const zoom = d3.zoom()
+    .scaleExtent([1, 8])  // Limit zoom scale between 1x and 8x
+    .translateExtent([[0, 0], [width, height]])  // Limit panning within canvas
+    .extent([[0, 0], [width, height]])
+    .wheelDelta((event) => {
+      // Reduce mouse wheel sensitivity to -0.01× the normal sensitivity
+      return -event.deltaY * 0.01;
+    })
+    .on("zoom", (event) => {
+      mapTransform = event.transform;
+      drawMap();
+    });
+  
+  // Apply zoom behavior to canvas
+  canvasElement.call(zoom);
+  
+  // Mouse move for hover detection with optimized performance
+  canvasElement.on("mousemove", debounce((event) => {
+    const [mouseX, mouseY] = d3.pointer(event);
+    let hoveredCountry = null;
     
-    // Zoom behavior with improved configuration
-    const zoom = d3.zoom()
-        .scaleExtent([1, 8])  // Limit zoom scale between 1x and 8x
-        .translateExtent([[0, 0], [width, height]])  // Limit panning within canvas
-        .extent([[0, 0], [width, height]])
-        .wheelDelta((event) => {
-            // Reduce mouse wheel sensitivity to -0.01× the normal sensitivity
-            return -event.deltaY * 0.01;
-        })
-        .on('zoom', (event) => {
-            mapTransform = event.transform;
-            drawMap();
-        });
+    // Apply inverse of current transform to get correct coordinates
+    // This is crucial for hit detection during zoom/pan
+    const x = (mouseX - mapTransform.x) / mapTransform.k;
+    const y = (mouseY - mapTransform.y) / mapTransform.k;
     
-    // Apply zoom behavior to canvas
-    canvasElement.call(zoom);
-    
-    // Mouse move for hover detection with optimized performance
-    canvasElement.on('mousemove', debounce((event) => {
-        const [mouseX, mouseY] = d3.pointer(event);
-        let hoveredCountry = null;
+    // Reset all highlights first
+    dataContainer.selectAll("custom.country")
+      .each(function() {
+        const element = d3.select(this);
+        if (element.attr("highlighted")) {
+          element.attr("fillStyle", element.attr("originalFill"));
+          element.attr("highlighted", null);
+          element.attr("originalFill", null);
+        }
+      });
+      
+    // Check which country contains the point - more efficient approach
+    dataContainer.selectAll("custom.country")
+      .each(function() {
+        const element = d3.select(this);
+        const countryData = element.datum();
         
-        // Apply inverse of current transform to get correct coordinates
-        // This is crucial for hit detection during zoom/pan
-        const x = (mouseX - mapTransform.x) / mapTransform.k;
-        const y = (mouseY - mapTransform.y) / mapTransform.k;
+        context.save();
+        context.beginPath();
+        path(countryData);
         
-        // Reset all highlights first
-        dataContainer.selectAll('custom.country')
-            .each(function() {
-                const element = d3.select(this);
-                if (element.attr('highlighted')) {
-                    element.attr('fillStyle', element.attr('originalFill'));
-                    element.attr('highlighted', null);
-                    element.attr('originalFill', null);
-                }
-            });
-            
-        // Check which country contains the point - more efficient approach
-        dataContainer.selectAll('custom.country')
-            .each(function() {
-                const element = d3.select(this);
-                const countryData = element.datum();
-                
-                context.save();
-                context.beginPath();
-                path(countryData);
-                
-                if (context.isPointInPath(x, y)) {
-                    hoveredCountry = countryData;
-                    
-                    // Highlight country
-                    element.attr('originalFill', element.attr('fillStyle'));
-                    element.attr('fillStyle', 'orange');
-                    element.attr('highlighted', true);
-                }
-                
-                context.restore();
-            });
-            
-        // Update tooltip
-        if (hoveredCountry) {
-            tooltip
-                .style('opacity', 0.9)
-                .style('left', (event.pageX + 10) + 'px')
-                .style('top', (event.pageY - 28) + 'px')
-                .html(`<strong>${hoveredCountry.properties.name}</strong>`);
-        } else {
-            tooltip.style('opacity', 0);
+        if (context.isPointInPath(x, y)) {
+          hoveredCountry = countryData;
+          
+          // Highlight country
+          element.attr("originalFill", element.attr("fillStyle"));
+          element.attr("fillStyle", "orange");
+          element.attr("highlighted", true);
         }
         
-        // Redraw with highlights
-        drawMap();
-    }, 10)); // Small debounce to improve performance
-    
-    // Mouse leave event
-    canvasElement.on('mouseleave', () => {
-        // Reset all highlights
-        dataContainer.selectAll('custom.country')
-            .each(function() {
-                const element = d3.select(this);
-                if (element.attr('highlighted')) {
-                    element.attr('fillStyle', element.attr('originalFill'));
-                    element.attr('highlighted', null);
-                    element.attr('originalFill', null);
-                }
-            });
-            
-        tooltip.style('opacity', 0);
-        drawMap();
-    });
-    
-    // Button controls with smoother transitions
-    d3.select('#reset').on('click', () => {
-      mapTransform = d3.zoomIdentity;
-      canvasElement.call(zoom.transform, d3.zoomIdentity);
-      drawMap(); // 변경 사항 즉시 적용
-    });
-    
-    d3.select('#zoom-in').on('click', () => {
-      const newTransform = d3.zoomIdentity
-          .translate(mapTransform.x, mapTransform.y)
-          .scale(mapTransform.k * 1.2);
+        context.restore();
+      });
       
-      mapTransform = newTransform;
-      canvasElement.call(zoom.transform, newTransform);
-      drawMap();
-    });
+    // Update tooltip
+    if (hoveredCountry) {
+      tooltip
+        .style("opacity", 0.9)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 28) + "px")
+        .html(`<strong>${hoveredCountry.properties.name}</strong>`);
+    } else {
+      tooltip.style("opacity", 0);
+    }
     
-    d3.select('#zoom-out').on('click', () => {
-      const newTransform = d3.zoomIdentity
-          .translate(mapTransform.x, mapTransform.y)
-          .scale(mapTransform.k * 0.8);
+    // Redraw with highlights
+    drawMap();
+  }, 10)); // Small debounce to improve performance
+  
+  // Mouse leave event
+  canvasElement.on("mouseleave", () => {
+    // Reset all highlights
+    dataContainer.selectAll("custom.country")
+      .each(function() {
+        const element = d3.select(this);
+        if (element.attr("highlighted")) {
+          element.attr("fillStyle", element.attr("originalFill"));
+          element.attr("highlighted", null);
+          element.attr("originalFill", null);
+        }
+      });
       
-      mapTransform = newTransform;
-      canvasElement.call(zoom.transform, newTransform);
-      drawMap();
-    });
+    tooltip.style("opacity", 0);
+    drawMap();
+  });
+  
+  // Button controls
+  d3.select("#reset").on("click", () => {
+    // Reset to initial view without transitions
+    mapTransform = d3.zoomIdentity;
+    canvasElement.call(zoom.transform, d3.zoomIdentity);
+    drawMap(); // Apply changes immediately
+  });
+  
+  d3.select("#zoom-in").on("click", () => {
+    // Create new transform based on current state with 20% zoom in
+    const newTransform = d3.zoomIdentity
+      .translate(mapTransform.x, mapTransform.y)
+      .scale(mapTransform.k * 1.2);
+    
+    mapTransform = newTransform;
+    canvasElement.call(zoom.transform, newTransform);
+    drawMap();
+  });
+  
+  d3.select("#zoom-out").on("click", () => {
+    // Create new transform based on current state with 20% zoom out
+    const newTransform = d3.zoomIdentity
+      .translate(mapTransform.x, mapTransform.y)
+      .scale(mapTransform.k * 0.8);
+    
+    mapTransform = newTransform;
+    canvasElement.call(zoom.transform, newTransform);
+    drawMap();
+  });
 }
 
-// Add a debounce function to improve performance
+// Debounce function to improve performance by limiting frequent function calls
 function debounce(func, wait) {
-    let timeout;
-    return function(...args) {
-        const context = this;
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(context, args), wait);
-    };
+  let timeout;
+  return function(...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
 }
-
 
 // Window resize handler
 window.addEventListener("resize", () => {
