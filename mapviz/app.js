@@ -212,16 +212,30 @@ function setupInteraction() {
     });
     
     // Button controls with smoother transitions
+    d3.select('#reset').on('click', () => {
+      mapTransform = d3.zoomIdentity;
+      canvasElement.call(zoom.transform, d3.zoomIdentity);
+      drawMap(); // 변경 사항 즉시 적용
+    });
+    
     d3.select('#zoom-in').on('click', () => {
-        canvasElement.transition().duration(300).call(zoom.scaleBy, 1.25);
+      const newTransform = d3.zoomIdentity
+          .translate(mapTransform.x, mapTransform.y)
+          .scale(mapTransform.k * 1.2);
+      
+      mapTransform = newTransform;
+      canvasElement.call(zoom.transform, newTransform);
+      drawMap();
     });
     
     d3.select('#zoom-out').on('click', () => {
-        canvasElement.transition().duration(300).call(zoom.scaleBy, 0.8);
-    });
-    
-    d3.select('#reset').on('click', () => {
-        canvasElement.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
+      const newTransform = d3.zoomIdentity
+          .translate(mapTransform.x, mapTransform.y)
+          .scale(mapTransform.k * 0.8);
+      
+      mapTransform = newTransform;
+      canvasElement.call(zoom.transform, newTransform);
+      drawMap();
     });
 }
 
