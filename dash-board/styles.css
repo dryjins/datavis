@@ -1,0 +1,96 @@
+/* ======  CSS (styles.css)  ====== */
+
+body {
+    font-family: system-ui, sans-serif;
+    margin: 0 auto;
+    max-width: 1400px;
+    padding: 1rem;
+    color: #333;
+  }
+  .title {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .charts-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  /* give each chart equal flex‑basis but let them shrink on small screens */
+  .chart-panel {
+    flex: 1 1 600px;
+    display: flex;
+    flex-direction: column;
+  }
+  .chart-panel svg {
+    width: 100%;
+    height: 350px;
+  }
+  
+  /* context (mini) chart is short */
+  #context-chart {
+    height: 80px;
+    margin-top: 0.5rem;
+  }
+  
+  .table-panel {
+    margin-top: 2rem;
+    overflow-x: auto;
+  }
+  
+  /* ====  Datatable ===== */
+  #data-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px; /* keep columns legible */
+  }
+  
+  #data-table thead tr:first-child th {
+    position: sticky;
+    top: 0;
+    background: #fafafa;
+  }
+  
+  #data-table th, #data-table td {
+    border: 1px solid #e0e0e0;
+    padding: 0.35rem 0.5rem;
+    text-align: left;
+  }
+  #data-table th {
+    cursor: pointer;               /* indicate sortable */
+    user-select: none;
+  }
+  #data-table tr:hover {
+    background: #f3f8ff;
+  }
+  #data-table tr.selected {
+    background: #ffe9b3 !important; /* strong highlight for selections */
+  }
+  
+  /* pagination */
+  #pagination {
+    margin-top: 0.5rem;
+    text-align: center;
+  }
+  .paginate-btn {
+    margin: 0 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #aaa;
+    cursor: pointer;
+    background: #fff;
+  }
+  .paginate-btn.active,
+  .paginate-btn:hover {
+    background: #dfe9ff;
+  }
+  
+  /* reset button */
+  #reset-btn {
+    margin-top: 1.5rem;
+    display: block;
+    padding: 0.4rem 0.8rem;
+    font-size: 1rem;
+  }
+  

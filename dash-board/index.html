@@ -1,0 +1,53 @@
+<!-- ======  HTML  ====== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chocolate‑Sales Dashboard</title>
+
+  <!-- D3 v7 -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <!-- Our custom styles -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <h1 class="title">Chocolate‑Sales Connected Dashboard</h1>
+
+  <!-- ── Main charts row ─────────────────────────────── -->
+  <div class="charts-row">
+    <div class="chart-panel">
+      <h2>Sales Over Time</h2>
+      <svg id="area-chart"></svg>
+
+      <!-- Context (mini) chart lives in its own SVG for clarity -->
+      <svg id="context-chart"></svg>
+    </div>
+
+    <div class="chart-panel">
+      <h2>Category Breakdown</h2>
+      <svg id="bar-chart"></svg>
+    </div>
+  </div>
+
+  <!-- ── Data‑table panel ─────────────────────────────── -->
+  <div class="table-panel">
+    <h2>Detailed Transactions</h2>
+    <!-- Filter inputs will be injected into thead by JS -->
+    <table id="data-table">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+
+    <!-- Pagination controls -->
+    <div id="pagination"></div>
+  </div>
+
+  <!-- ── Global controls ─────────────────────────────── -->
+  <button id="reset-btn">Reset All Filters</button>
+
+  <!-- Our custom logic -->
+  <script src="app.js"></script>
+</body>
+</html>
